@@ -3,12 +3,13 @@
 
 import express from "express"
 import multer from "multer"
-import { getAuthors, writeAuthors, getBlogPosts, writeBlogPosts, saveBlogPostsCover } from "../../lib/fs-tools.js"
+import { getAuthors, writeAuthors, getBlogPosts, writeBlogPosts, saveBlogPostsCover, getAuthorsReadableStream } from "../../lib/fs-tools.js"
 import { extname } from "path"
 import { pipeline } from "stream" //core module
 import { getPDFReadableStream } from "../../lib/pdf.js"
 import { v2 as cloudinary } from "cloudinary"
 import { CloudinaryStorage } from "multer-storage-cloudinary"
+import json2csv from "json2csv"
 
 const cloudinaryStorage = new CloudinaryStorage({
   cloudinary, // grabs CLOUDINARY_URL from process.env.CLOUDINARY_URL
@@ -109,5 +110,23 @@ filesRouter.get("/PDFDownload/:blogID", async (req, res, next) => {
     next(error)
   }
 })
+
+// GET CSV file
+filesRouter.get("/CSVDownload", async (req, res, next) => {
+  try {
+    const filename = "test.csv"
+    res.setHeader("Content-Disposition", `attachment; filename=${filename}`) // this header tells the browser to open the "save file as" dialog
+    const source = getAuthorsReadableStream()
+    const transform = new json2csv.Transform({ fields: ["name", "surname", "email", "id"] })
+    const destination = res
+
+    pipeline(source, transform, destination, err => {
+      if (err) next(err)
+    })
+  } catch (error) {
+    next(error)
+  }
+})
+
 
 export default filesRouter
