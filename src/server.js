@@ -5,6 +5,7 @@ import listEndpoints from "express-list-endpoints"
 import blogPostsRouter from "./services/blogPosts/index.js"
 import filesRouter from "./services/files/index.js"
 import { join } from "path"
+import usersRouter from "./services/users/index.js"
 
 const server = express();
 const port = process.env.PORT;
@@ -40,6 +41,7 @@ server.use(express.json()) //this comes before the routes
 server.use("/authors", authorsRouter)
 server.use("/blogPosts", blogPostsRouter)
 server.use("/files", filesRouter)
+server.use("/users", usersRouter)
 
 console.table(listEndpoints(server))
 server.listen(port, () => {
