@@ -6,11 +6,16 @@ import blogPostsRouter from "./services/blogPosts/index.js"
 import filesRouter from "./services/files/index.js"
 import { join } from "path"
 import usersRouter from "./services/users/index.js"
+import swaggerUI from "swagger-ui-express"
+import yaml from "yamljs"
+import { getCurrentPath } from "./lib/fs-tools.js"
 
 const server = express();
 const port = process.env.PORT;
 //console.log(process.env)
 const publicFolderPath = join(process.cwd(), "public")
+
+const yamlDocument = yaml.load(join(getCurrentPath(import.meta.url), "apiDescription.yml"))
 
 const whitelist= [process.env.FE_DEV_URL, process.env.FE_PROD_URL] // what frontends are allowed
 
@@ -42,6 +47,7 @@ server.use("/authors", authorsRouter)
 server.use("/blogPosts", blogPostsRouter)
 server.use("/files", filesRouter)
 server.use("/users", usersRouter)
+server.use("/docs", swaggerUI.serve, swaggerUI.setup(yamlDocument))
 
 console.table(listEndpoints(server))
 server.listen(port, () => {

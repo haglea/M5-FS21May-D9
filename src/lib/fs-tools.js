@@ -18,3 +18,5 @@ export const saveAuthorsPicture = (filename, contentAsBuffer) => writeFile(join(
 export const saveBlogPostsCover = (filename, contentAsBuffer) => writeFile(join(publicFolderPathBlogPost, filename), contentAsBuffer)
 
 export const getAuthorsReadableStream = () => createReadStream(authorsJSONPath)
+
+export const getCurrentPath = currentFile => dirname(fileURLToPath(currentFile))
